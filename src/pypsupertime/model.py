@@ -21,19 +21,36 @@ MAX_EXP = 709
 
 
 class BinaryLogisticRegression(torch.nn.Module):
+    """
+    Simple Binary Logistic Regression model implemented in PyTorch.
+    """
 
     def __init__(self, input_dim):
+        """
+        Initializes the model.
+
+        Parameters
+        ----------
+        input_dim : int
+            Number of input features.
+        """
         super(BinaryLogisticRegression, self).__init__()
         self.linear = torch.nn.Linear(input_dim, 1)
         #self.apply(self._init_weights_zero)
 
     def _init_weights_zero(self, module):
+        """
+        Initializes weights of Linear layers to zero.
+        """
         if isinstance(module, torch.nn.Linear):
             module.weight.data.zero_()
             if module.bias is not None:
                 module.bias.data.zero_()
 
     def forward(self, x):
+        """
+        Forward pass of the model.
+        """
         outputs = torch.sigmoid(self.linear(x))
         return outputs
 
@@ -44,6 +61,18 @@ class OptimalLR():
     """
 
     def __init__(self, optimizer, alpha, t0=0):
+        """
+        Initializes the OptimalLR scheduler.
+
+        Parameters
+        ----------
+        optimizer : torch.optim.Optimizer
+            The PyTorch optimizer.
+        alpha : float
+            The regularization parameter.
+        t0 : int, optional
+            The initial time step, defaults to 0.
+        """
 
         self.optimizer = optimizer
         self.alpha = alpha
@@ -92,19 +121,22 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
     Provides predict methods, that uses the fitted binary classifier to estimate the probabilities and labels of
     the ordinal multiclass problem.
 
-    :ivar method: Statistical model used for ordinal logistic regression: One of `"proportional"`, `"forward"` 
-     and `"backward"`, corresponding to cumulative proportional odds, forward continuation ratio and
-     backward continuation ratio.
-    :type method: str 
-    :ivar regularization: parmeter controlling the sparsity of the model. Wrapper for the respective parameter
-     of the nested `binary_estimator_`. Not necessary
-    :type regularization: float
-    :ivar k_: number of thresholds to be learned, equal to one less than the number of unique ordinal labels 
-    :type k_: int
-    :ivar random_state: Initialize the RNG for reproducibility
-    :type random_state: int
-    :ivar track_scores: Set to True to track training loss and degrees of freedom. In models that support early stopping, validation loss is also recorded
-    :type track_scores: boolean
+    Attributes
+    ----------
+    method : str
+        Statistical model used for ordinal logistic regression: One of `"proportional"`, `"forward"` 
+        and `"backward"`, corresponding to cumulative proportional odds, forward continuation ratio and
+        backward continuation ratio.
+    regularization : float
+        parmeter controlling the sparsity of the model. Wrapper for the respective parameter
+        of the nested `binary_estimator_`. Not necessary
+    k_ : int
+        number of thresholds to be learned, equal to one less than the number of unique ordinal labels 
+    random_state : int
+        Initialize the RNG for reproducibility
+    track_scores : bool
+        Set to True to track training loss and degrees of freedom. In models that support early stopping, 
+        validation loss is also recorded
     """
     coef_: np.array
     intercept_: np.array
@@ -119,16 +151,54 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
                  l1_ratio=1,
                  n_batches=1,
                  max_iter=100,
-                 random_state=1234, 
+                 random_state=1234,
                  learning_rate=0.1,
-                 shuffle=True, 
+                 shuffle=True,
                  early_stopping=False,
                  early_stopping_batches=False,
                  tol=1e-3,
-                 n_iter_no_change=5, 
+                 n_iter_no_change=5,
                  validation_fraction=0.1,
                  track_scores=False,
                  verbosity=0):
+        """
+        Initializes the PsupertimeBaseModel.
+
+        Parameters
+        ----------
+        method : str, optional
+            Ordinal regression method ('proportional', 'forward', 'backward'). Defaults to 'proportional'.
+        regularization : float, optional
+            Regularization strength. Defaults to 0.1.
+        penalty : str, optional
+            Penalty type ('l1', 'l2', 'elasticnet'). Defaults to 'l1'.
+        l1_ratio : float, optional
+            Ratio of L1 penalty for elasticnet. Defaults to 1.
+        n_batches : int, optional
+            Number of batches for training. Defaults to 1.
+        max_iter : int, optional
+            Maximum number of iterations. Defaults to 100.
+        random_state : int, optional
+            Seed for reproducibility. Defaults to 1234.
+        learning_rate : float, optional
+            Learning rate for training. Defaults to 0.1.
+        shuffle : bool, optional
+            Whether to shuffle data each iteration. Defaults to True.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        tol : float, optional
+            Tolerance for stopping criteria. Defaults to 1e-3.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        validation_fraction : float, optional
+            Fraction of data for validation. Defaults to 0.1.
+        track_scores : bool, optional
+            Whether to track training and validation loss. Defaults to False.
+        verbosity : int, optional
+            Level of output detail. Defaults to 0.
+        """
 
         if not isinstance(method, str) or method not in ["proportional", "forward", "backward"]:
             raise ValueError('Parameter method must be one of "proportional", "forward", "backward". Received %s ' % method)
@@ -260,18 +330,36 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
     def fit(self, data, targets, sample_weight=None):
         """Template fit function for derived models.
 
-        :param data: 2d data
-        :type data: numpy or numpy.sparse matrix
-        :param targets: Array-like object with ordinal labels
-        :type targets: Iterable
-        :param sample_weight: label weights to be used for training and scoring, defaults to None
-        :type sample_weight: Iterable, optional
-        :return: fitted estimator
-        :rtype: PsupertimeBaseModel
+        Parameters
+        ----------
+        data : numpy.array or scipy.sparse matrix
+            2d data
+        targets : Iterable
+            Array-like object with ordinal labels
+        sample_weight : Iterable, optional
+            label weights to be used for training and scoring, defaults to None
+
+        Returns
+        -------
+        PsupertimeBaseModel
+            fitted estimator
         """
         pass
 
     def predict_proba(self, X):
+        """
+        Predicts class probabilities for the input data.
+
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Input features.
+
+        Returns
+        -------
+        numpy.array
+            Class probabilities.
+        """
         warnings.filterwarnings("once")
 
         transform = X @ self.coef_        
@@ -300,9 +388,38 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
         return prob
     
     def predict(self, X):
+        """
+        Predicts class labels for the input data.
+
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Input features.
+
+        Returns
+        -------
+        numpy.array
+            Predicted class labels.
+        """
         return np.apply_along_axis(np.argmax, 1, self.predict_proba(X))
 
     def predict_psuper(self, anndata: ad.AnnData, inplace=True):
+        """
+        Calculates psupertime and predicted labels for the given AnnData object.
+
+        Parameters
+        ----------
+        anndata : ad.AnnData
+            AnnData object to annotate.
+        inplace : bool, optional
+            Whether to annotate the object in place or return a copy of the observations, 
+            defaults to True.
+
+        Returns
+        -------
+        pd.DataFrame or None
+            Annotated observations if inplace is False.
+        """
         
         transform = anndata.X @ self.coef_
         predicted_labels = self.predict(anndata.X)      
@@ -318,6 +435,22 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
             return obs_copy
     
     def gene_weights(self, anndata: ad.AnnData, inplace=True):
+        """
+        Annotates genes with their learned weights.
+
+        Parameters
+        ----------
+        anndata : ad.AnnData
+            AnnData object to annotate.
+        inplace : bool, optional
+            Whether to annotate the object in place or return a DataFrame of weights,
+            defaults to True.
+
+        Returns
+        -------
+        pd.DataFrame or None
+            DataFrame of gene weights if inplace is False.
+        """
         if inplace:
             anndata.var["psupertime_weight"] = self.coef_
         else:
@@ -356,6 +489,54 @@ class SGDModel(PsupertimeBaseModel):
                  validation_fraction=0.1,
                  class_weight=None,
                  track_scores=False):
+        """
+        Initializes the SGDModel.
+
+        Parameters
+        ----------
+        method : str, optional
+            Ordinal regression method. Defaults to "proportional".
+        regularization : float, optional
+            Regularization strength (alpha). Defaults to 0.01.
+        n_batches : int, optional
+            Number of batches. Defaults to 1.
+        max_iter : int, optional
+            Maximum iterations. Defaults to 100.
+        random_state : int, optional
+            Random state seed. Defaults to 1234.
+        learning_rate : str, optional
+            Learning rate schedule ('optimal', 'constant', etc.). Defaults to "optimal".
+        eta0 : float, optional
+            Initial learning rate. Defaults to 0.
+        power_t : float, optional
+            Exponent for inverse scaling learning rate. Defaults to 0.5.
+        average : bool, optional
+            Whether to use averaged SGD. Defaults to False.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        tol : float, optional
+            Tolerance for stopping. Defaults to 1e-3.
+        penalty : str, optional
+            Penalty type. Defaults to 'elasticnet'.
+        l1_ratio : float, optional
+            Elasticnet ratio. Defaults to 1.
+        shuffle : bool, optional
+            Whether to shuffle data. Defaults to True.
+        verbosity : int, optional
+            Verbosity level. Defaults to 0.
+        epsilon : float, optional
+            Epsilon for huber loss. Defaults to 0.1.
+        validation_fraction : float, optional
+            Fraction for validation. Defaults to 0.1.
+        class_weight : dict, optional
+            Class weights. Defaults to None.
+        track_scores : bool, optional
+            Whether to track scores. Defaults to False.
+        """
 
         super(SGDModel, self).__init__(method=method, penalty=penalty, l1_ratio=l1_ratio, n_batches=n_batches, max_iter=max_iter, random_state=random_state,
                                               regularization=regularization, learning_rate=learning_rate, verbosity=verbosity, shuffle=shuffle,
@@ -402,16 +583,21 @@ class SGDModel(PsupertimeBaseModel):
 
         Derived from a `sklearn.linear.SGDClassifier`, fitted in batches according to `self.n_batches` 
         for reduced memory usage.
-        
 
-        :param X: Data as 2d-matrix
-        :type X: numpy.array or scipy.sparse
-        :param y: ordinal labels
-        :type y: Iterable
-        :param sample_weight: Label weights for fitting and scoring, defaults to None. Can be used for example for class balancing.
-        :type sample_weight: Iterable, optional
-        :return: fitted classifier
-        :rtype: SGDModel
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Data as 2d-matrix
+        y : Iterable
+            ordinal labels
+        sample_weight : Iterable, optional
+            Label weights for fitting and scoring, defaults to None. 
+            Can be used for example for class balancing.
+
+        Returns
+        -------
+        SGDModel
+            fitted classifier
         """
         X, y, X_test, y_test = self._before_fit(X, y)
         n = X.shape[0]
@@ -494,6 +680,44 @@ class CumulativePenaltySGDModel(PsupertimeBaseModel):
                  verbosity=0, 
                  validation_fraction=0.1,
                  track_scores=False):
+        """
+        Initializes the CumulativePenaltySGDModel.
+
+        Parameters
+        ----------
+        method : str, optional
+            Ordinal regression method, defaults to "proportional".
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches, defaults to False.
+        n_batches : int, optional
+            Number of batches, defaults to 1.
+        max_iter : int, optional
+            Maximum iterations, defaults to 100.
+        random_state : int, optional
+            Random state seed, defaults to 1234.
+        regularization : float, optional
+            Regularization strength, defaults to 0.01.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping, defaults to 5.
+        early_stopping : bool, optional
+            Whether to use early stopping, defaults to False.
+        tol : float, optional
+            Tolerance for stopping, defaults to 1e-3.
+        learning_rate : float, optional
+            Learning rate, defaults to 0.
+        penalty : str, optional
+            Penalty type, defaults to 'elasticnet'.
+        l1_ratio : float, optional
+            Elasticnet ratio, defaults to 1.
+        shuffle : bool, optional
+            Whether to shuffle data, defaults to True.
+        verbosity : int, optional
+            Verbosity level, defaults to 0.
+        validation_fraction : float, optional
+            Fraction for validation, defaults to 0.1.
+        track_scores : bool, optional
+            Whether to track scores, defaults to False.
+        """
 
         super(CumulativePenaltySGDModel, self).__init__(method=method, penalty=penalty, l1_ratio=l1_ratio, n_batches=n_batches, max_iter=max_iter, random_state=random_state,
                                         regularization=regularization, learning_rate=learning_rate, verbosity=verbosity, shuffle=shuffle,
@@ -515,16 +739,21 @@ class CumulativePenaltySGDModel(PsupertimeBaseModel):
 
         Extends the BianryLogisticRegression calss build with Pytorch, fitted in batches according to `self.n_batches` 
         for reduced memory usage.
-        
 
-        :param X: Data as 2d-matrix
-        :type X: numpy.array or scipy.sparse
-        :param y: ordinal labels
-        :type y: Iterable
-        :param sample_weight: Label weights for fitting and scoring, defaults to None. Can be used for example for class balancing.
-        :type sample_weight: Iterable, optional
-        :return: fitted classifier
-        :rtype: BatchSGDModel
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Data as 2d-matrix
+        y : Iterable
+            ordinal labels
+        sample_weights : Iterable, optional
+            Label weights for fitting and scoring, defaults to None. 
+            Can be used for example for class balancing.
+
+        Returns
+        -------
+        CumulativePenaltySGDModel
+            fitted classifier
         """
         rng = np.random.default_rng(self.random_state)
         X, y, X_test, y_test = self._before_fit(X, y, sample_weights)
@@ -659,6 +888,48 @@ class ThresholdSGDModel(PsupertimeBaseModel):
                  verbosity=0, 
                  validation_fraction=0.1,
                  track_scores=False):
+        """
+        Initializes the ThresholdSGDModel.
+
+        Parameters
+        ----------
+        sparsity_threshold : float, optional
+            Threshold below which weights are set to zero. Defaults to 1e-3.
+        method : str, optional
+            Ordinal regression method. Defaults to "proportional".
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        n_batches : int, optional
+            Number of batches. Defaults to 1.
+        max_iter : int, optional
+            Maximum iterations. Defaults to 100.
+        random_state : int, optional
+            Random state seed. Defaults to 1234.
+        regularization : float, optional
+            Regularization strength. Defaults to 0.01.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        tol : float, optional
+            Tolerance for stopping. Defaults to 1e-4.
+        learning_rate : float, optional
+            Learning rate. Defaults to 0.1.
+        gamma : float, optional
+            Learning rate decay factor. Defaults to 0.95.
+        penalty : str, optional
+            Penalty type. Defaults to 'elasticnet'.
+        l1_ratio : float, optional
+            Elasticnet ratio. Defaults to 1.
+        shuffle : bool, optional
+            Whether to shuffle data. Defaults to True.
+        verbosity : int, optional
+            Verbosity level. Defaults to 0.
+        validation_fraction : float, optional
+            Fraction for validation. Defaults to 0.1.
+        track_scores : bool, optional
+            Whether to track scores. Defaults to False.
+        """
 
         super(ThresholdSGDModel, self).__init__(method=method, penalty=penalty, l1_ratio=l1_ratio, n_batches=n_batches, max_iter=max_iter, random_state=random_state,
                                         regularization=regularization, learning_rate=learning_rate, verbosity=verbosity, shuffle=shuffle,
@@ -674,8 +945,16 @@ class ThresholdSGDModel(PsupertimeBaseModel):
     def _apply_threshold(self, weights):
         """
         Applies the sparsity threshold to weights.
-        :param weights: Weights of a logistic model
-        :type weights: Needs to be a numpy array
+
+        Parameters
+        ----------
+        weights : numpy.array
+            Weights of a logistic model.
+
+        Returns
+        -------
+        numpy.array
+            Weights with values below the threshold set to zero.
         """
         weights[np.abs(weights) < self.sparsity_threshold] = 0
         return weights
@@ -689,22 +968,28 @@ class ThresholdSGDModel(PsupertimeBaseModel):
         self.intercept_ = coef[-self.k_:] +  intercept
 
     def fit(self, X, y, sample_weights=None):
-        """Fit ordinal logistic model. 
-        Multiclass data is converted to binarized representation and one weight per feature, 
+        """Fit ordinal logistic model.
+
+        Multiclass data is converted to binarized representation and one weight per feature,
         as well as a threshold for each class is fitted with a binary logistic classifier.
 
-        Derived from a `sklearn.linear.SGDClassifier`, fitted in batches according to `self.n_batches` 
+        Derived from a `sklearn.linear.SGDClassifier`, fitted in batches according to `self.n_batches`
         for reduced memory usage.
-        
 
-        :param X: Data as 2d-matrix
-        :type X: numpy.array or scipy.sparse
-        :param y: ordinal labels
-        :type y: Iterable
-        :param sample_weight: Label weights for fitting and scoring, defaults to None. Can be used for example for class balancing.
-        :type sample_weight: Iterable, optional
-        :return: fitted classifier
-        :rtype: BatchSGDModel
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Data as 2d-matrix.
+        y : Iterable
+            Ordinal labels.
+        sample_weights : Iterable, optional
+            Label weights for fitting and scoring, defaults to None.
+            Can be used for example for class balancing.
+
+        Returns
+        -------
+        ThresholdSGDModel
+            Fitted classifier.
         """
         rng = np.random.default_rng(self.random_state)
         X, y, X_test, y_test = self._before_fit(X, y, sample_weights)

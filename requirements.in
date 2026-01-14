@@ -1,0 +1,11 @@
+# Direct dependencies for pypsupertime
+# Run: pip-compile requirements.in -o requirements.txt
+
+numpy
+matplotlib
+seaborn
+scikit-learn
+scipy
+scanpy
+anndata
+torch
