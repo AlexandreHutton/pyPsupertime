@@ -4,7 +4,7 @@ PyPsupertime
 PyPsupertime is a scalable python re-implementation of the [R package `psupertime`](https://github.com/wmacnair/psupertime) for analysis of single-cell RNA sequencing data where the cell have an ordinal annotation (e.g. time series, or dosage).
 It can be used to identify a small subset of cells which contribute to the ordering and reconstruct a pseudotime.
 
-The original methodology is published in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btac227), and the original GitHub repository can be found [in the Claasenlab Org repo](https://github.com/claasenlab/psupertime), but it has been archived and requires modification to run with recent versions of scikit-learn.
+The original methodology is published in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btac227), and the original GitHub repository can be found [in the Claasenlab Org repo](https://github.com/claassenlab/pyPsupertime), but it has been archived and requires modification to run with recent versions of scikit-learn.
 
 Getting Started
 ---------------
