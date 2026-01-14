@@ -1,6 +1,14 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-
+title: "pypsupertime"
+version: 2.2.1
+authors:
+- family-names: "Flesch"
+  given-names: "Julian"
+- family-names: "Hutton"
+  given-names: "Alexandre"
+date-released: 2026-01-14
+url: "https://github.com/AlexandreHutton/PyPsupertime"
 preferred-citation:
   type: article
   authors:
@@ -19,14 +27,4 @@ preferred-citation:
   end: i296
   doi: "10.1093/bioinformatics/btac227"
 
-references:
-    type: software
-    title: "pypsupertime"
-    version: 2.2.1
-    authors:
-    - family-names: "Flesch"
-      given-names: "Julian"
-    - family-names: "Hutton"
-      given-names: "Alexandre"
-    date-released: 2026-01-14
-    url: "https://github.com/AlexandreHutton/PyPsupertime"
+
