@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Macnair"
+      given-names: "Will"
+    - family-names: "Gupta"
+      given-names: "Revant"
+    - family-names: "Claassen"
+      given-names: "Manfred"
+  title: "psupertime: supervised pseudotime analysis for time-series single-cell RNA-seq data"
+  journal: "Bioinformatics"
+  year: 2022
+  volume: 38
+  issue: "Supplement_1"
+  start: i290
+  end: i296
+  doi: "10.1093/bioinformatics/btac227"
+
+references:
+    type: software
+    title: "pypsupertime"
+    version: 2.2.1
+    authors:
+    - family-names: "Flesch"
+      given-names: "Julian"
+    - family-names: "Hutton"
+      given-names: "Alexandre"
+    date-released: 2026-01-14
+    url: "https://github.com/AlexandreHutton/PyPsupertime"
