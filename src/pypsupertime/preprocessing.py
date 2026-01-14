@@ -122,11 +122,15 @@ def calculate_weights(y):
     `n_samples / (n_classes * np.bincount(y))`
     as is done in sklearn.
 
-    Args:
-        y (Iterable): Array of class labels.
+    Parameters
+    ----------
+    y : Iterable
+        Array of class labels.
 
-    Returns:
-        np.array: Array of weights for each sample in y.
+    Returns
+    -------
+    np.array
+        Array of weights for each sample in y.
     """
     classes = np.unique(y)
     weights = class_weight.compute_class_weight("balanced", classes=classes, y=y)
@@ -262,18 +266,32 @@ class Preprocessing(BaseEstimator, TransformerMixin):
         """
         Initializes the Preprocessing transformer.
 
-        :param log: Whether to log-transform the data.
-        :param scale: Whether to scale the data to unit variance and zero mean.
-        :param normalize: Whether to normalize counts per cell.
-        :param smooth: Whether to smooth data using KNN.
-        :param smooth_knn: Number of neighbors for smoothing.
-        :param select_genes: Method for gene selection ('all', 'hvg', 'list', etc.).
-        :param gene_list: List of genes to use if select_genes is 'list'.
-        :param min_gene_mean: Minimum mean expression for gene filtering.
-        :param max_gene_mean: Maximum mean expression for gene filtering.
-        :param hvg_min_dispersion: Minimum dispersion for HVG selection.
-        :param hvg_max_dispersion: Maximum dispersion for HVG selection.
-        :param hvg_n_top_genes: Number of top HVGs to select.
+        Parameters
+        ----------
+        log : bool
+            Whether to log-transform the data.
+        scale : bool
+            Whether to scale the data to unit variance and zero mean.
+        normalize : bool
+            Whether to normalize counts per cell.
+        smooth : bool
+            Whether to smooth data using KNN.
+        smooth_knn : int
+            Number of neighbors for smoothing.
+        select_genes : str
+            Method for gene selection ('all', 'hvg', 'list', etc.).
+        gene_list : Iterable, optional
+            List of genes to use if select_genes is 'list'.
+        min_gene_mean : float
+            Minimum mean expression for gene filtering.
+        max_gene_mean : float
+            Maximum mean expression for gene filtering.
+        hvg_min_dispersion : float
+            Minimum dispersion for HVG selection.
+        hvg_max_dispersion : float
+            Maximum dispersion for HVG selection.
+        hvg_n_top_genes : int, optional
+            Number of top HVGs to select.
         """
         
         self.scale = scale

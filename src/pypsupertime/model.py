@@ -164,22 +164,40 @@ class PsupertimeBaseModel(ClassifierMixin, BaseEstimator, ABC):
         """
         Initializes the PsupertimeBaseModel.
 
-        :param method: Ordinal regression method ('proportional', 'forward', 'backward').
-        :param regularization: Regularization strength.
-        :param penalty: Penalty type ('l1', 'l2', 'elasticnet').
-        :param l1_ratio: Ratio of L1 penalty for elasticnet.
-        :param n_batches: Number of batches for training.
-        :param max_iter: Maximum number of iterations.
-        :param random_state: Seed for reproducibility.
-        :param learning_rate: Learning rate for training.
-        :param shuffle: Whether to shuffle data each iteration.
-        :param early_stopping: Whether to use early stopping.
-        :param early_stopping_batches: Whether to use early stopping on batches.
-        :param tol: Tolerance for stopping criteria.
-        :param n_iter_no_change: Iterations with no change for early stopping.
-        :param validation_fraction: Fraction of data for validation.
-        :param track_scores: Whether to track training and validation loss.
-        :param verbosity: Level of output detail.
+        Parameters
+        ----------
+        method : str, optional
+            Ordinal regression method ('proportional', 'forward', 'backward'). Defaults to 'proportional'.
+        regularization : float, optional
+            Regularization strength. Defaults to 0.1.
+        penalty : str, optional
+            Penalty type ('l1', 'l2', 'elasticnet'). Defaults to 'l1'.
+        l1_ratio : float, optional
+            Ratio of L1 penalty for elasticnet. Defaults to 1.
+        n_batches : int, optional
+            Number of batches for training. Defaults to 1.
+        max_iter : int, optional
+            Maximum number of iterations. Defaults to 100.
+        random_state : int, optional
+            Seed for reproducibility. Defaults to 1234.
+        learning_rate : float, optional
+            Learning rate for training. Defaults to 0.1.
+        shuffle : bool, optional
+            Whether to shuffle data each iteration. Defaults to True.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        tol : float, optional
+            Tolerance for stopping criteria. Defaults to 1e-3.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        validation_fraction : float, optional
+            Fraction of data for validation. Defaults to 0.1.
+        track_scores : bool, optional
+            Whether to track training and validation loss. Defaults to False.
+        verbosity : int, optional
+            Level of output detail. Defaults to 0.
         """
 
         if not isinstance(method, str) or method not in ["proportional", "forward", "backward"]:
@@ -474,27 +492,50 @@ class SGDModel(PsupertimeBaseModel):
         """
         Initializes the SGDModel.
 
-        :param method: Ordinal regression method.
-        :param regularization: Regularization strength (alpha).
-        :param n_batches: Number of batches.
-        :param max_iter: Maximum iterations.
-        :param random_state: Random state seed.
-        :param learning_rate: Learning rate schedule ('optimal', 'constant', etc.).
-        :param eta0: Initial learning rate.
-        :param power_t: Exponent for inverse scaling learning rate.
-        :param average: Whether to use averaged SGD.
-        :param early_stopping: Whether to use early stopping.
-        :param early_stopping_batches: Whether to use early stopping on batches.
-        :param n_iter_no_change: Iterations with no change for early stopping.
-        :param tol: Tolerance for stopping.
-        :param penalty: Penalty type.
-        :param l1_ratio: Elasticnet ratio.
-        :param shuffle: Whether to shuffle data.
-        :param verbosity: Verbosity level.
-        :param epsilon: Epsilon for huber loss.
-        :param validation_fraction: Fraction for validation.
-        :param class_weight: Class weights.
-        :param track_scores: Whether to track scores.
+        Parameters
+        ----------
+        method : str, optional
+            Ordinal regression method. Defaults to "proportional".
+        regularization : float, optional
+            Regularization strength (alpha). Defaults to 0.01.
+        n_batches : int, optional
+            Number of batches. Defaults to 1.
+        max_iter : int, optional
+            Maximum iterations. Defaults to 100.
+        random_state : int, optional
+            Random state seed. Defaults to 1234.
+        learning_rate : str, optional
+            Learning rate schedule ('optimal', 'constant', etc.). Defaults to "optimal".
+        eta0 : float, optional
+            Initial learning rate. Defaults to 0.
+        power_t : float, optional
+            Exponent for inverse scaling learning rate. Defaults to 0.5.
+        average : bool, optional
+            Whether to use averaged SGD. Defaults to False.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        tol : float, optional
+            Tolerance for stopping. Defaults to 1e-3.
+        penalty : str, optional
+            Penalty type. Defaults to 'elasticnet'.
+        l1_ratio : float, optional
+            Elasticnet ratio. Defaults to 1.
+        shuffle : bool, optional
+            Whether to shuffle data. Defaults to True.
+        verbosity : int, optional
+            Verbosity level. Defaults to 0.
+        epsilon : float, optional
+            Epsilon for huber loss. Defaults to 0.1.
+        validation_fraction : float, optional
+            Fraction for validation. Defaults to 0.1.
+        class_weight : dict, optional
+            Class weights. Defaults to None.
+        track_scores : bool, optional
+            Whether to track scores. Defaults to False.
         """
 
         super(SGDModel, self).__init__(method=method, penalty=penalty, l1_ratio=l1_ratio, n_batches=n_batches, max_iter=max_iter, random_state=random_state,
@@ -850,24 +891,44 @@ class ThresholdSGDModel(PsupertimeBaseModel):
         """
         Initializes the ThresholdSGDModel.
 
-        :param sparsity_threshold: Threshold below which weights are set to zero.
-        :param method: Ordinal regression method.
-        :param early_stopping_batches: Whether to use early stopping on batches.
-        :param n_batches: Number of batches.
-        :param max_iter: Maximum iterations.
-        :param random_state: Random state seed.
-        :param regularization: Regularization strength.
-        :param n_iter_no_change: Iterations with no change for early stopping.
-        :param early_stopping: Whether to use early stopping.
-        :param tol: Tolerance for stopping.
-        :param learning_rate: Learning rate.
-        :param gamma: Learning rate decay factor.
-        :param penalty: Penalty type.
-        :param l1_ratio: Elasticnet ratio.
-        :param shuffle: Whether to shuffle data.
-        :param verbosity: Verbosity level.
-        :param validation_fraction: Fraction for validation.
-        :param track_scores: Whether to track scores.
+        Parameters
+        ----------
+        sparsity_threshold : float, optional
+            Threshold below which weights are set to zero. Defaults to 1e-3.
+        method : str, optional
+            Ordinal regression method. Defaults to "proportional".
+        early_stopping_batches : bool, optional
+            Whether to use early stopping on batches. Defaults to False.
+        n_batches : int, optional
+            Number of batches. Defaults to 1.
+        max_iter : int, optional
+            Maximum iterations. Defaults to 100.
+        random_state : int, optional
+            Random state seed. Defaults to 1234.
+        regularization : float, optional
+            Regularization strength. Defaults to 0.01.
+        n_iter_no_change : int, optional
+            Iterations with no change for early stopping. Defaults to 5.
+        early_stopping : bool, optional
+            Whether to use early stopping. Defaults to False.
+        tol : float, optional
+            Tolerance for stopping. Defaults to 1e-4.
+        learning_rate : float, optional
+            Learning rate. Defaults to 0.1.
+        gamma : float, optional
+            Learning rate decay factor. Defaults to 0.95.
+        penalty : str, optional
+            Penalty type. Defaults to 'elasticnet'.
+        l1_ratio : float, optional
+            Elasticnet ratio. Defaults to 1.
+        shuffle : bool, optional
+            Whether to shuffle data. Defaults to True.
+        verbosity : int, optional
+            Verbosity level. Defaults to 0.
+        validation_fraction : float, optional
+            Fraction for validation. Defaults to 0.1.
+        track_scores : bool, optional
+            Whether to track scores. Defaults to False.
         """
 
         super(ThresholdSGDModel, self).__init__(method=method, penalty=penalty, l1_ratio=l1_ratio, n_batches=n_batches, max_iter=max_iter, random_state=random_state,
@@ -884,8 +945,16 @@ class ThresholdSGDModel(PsupertimeBaseModel):
     def _apply_threshold(self, weights):
         """
         Applies the sparsity threshold to weights.
-        :param weights: Weights of a logistic model
-        :type weights: Needs to be a numpy array
+
+        Parameters
+        ----------
+        weights : numpy.array
+            Weights of a logistic model.
+
+        Returns
+        -------
+        numpy.array
+            Weights with values below the threshold set to zero.
         """
         weights[np.abs(weights) < self.sparsity_threshold] = 0
         return weights
@@ -899,22 +968,28 @@ class ThresholdSGDModel(PsupertimeBaseModel):
         self.intercept_ = coef[-self.k_:] +  intercept
 
     def fit(self, X, y, sample_weights=None):
-        """Fit ordinal logistic model. 
-        Multiclass data is converted to binarized representation and one weight per feature, 
+        """Fit ordinal logistic model.
+
+        Multiclass data is converted to binarized representation and one weight per feature,
         as well as a threshold for each class is fitted with a binary logistic classifier.
 
-        Derived from a `sklearn.linear.SGDClassifier`, fitted in batches according to `self.n_batches` 
+        Derived from a `sklearn.linear.SGDClassifier`, fitted in batches according to `self.n_batches`
         for reduced memory usage.
-        
 
-        :param X: Data as 2d-matrix
-        :type X: numpy.array or scipy.sparse
-        :param y: ordinal labels
-        :type y: Iterable
-        :param sample_weight: Label weights for fitting and scoring, defaults to None. Can be used for example for class balancing.
-        :type sample_weight: Iterable, optional
-        :return: fitted classifier
-        :rtype: BatchSGDModel
+        Parameters
+        ----------
+        X : numpy.array or scipy.sparse matrix
+            Data as 2d-matrix.
+        y : Iterable
+            Ordinal labels.
+        sample_weights : Iterable, optional
+            Label weights for fitting and scoring, defaults to None.
+            Can be used for example for class balancing.
+
+        Returns
+        -------
+        ThresholdSGDModel
+            Fitted classifier.
         """
         rng = np.random.default_rng(self.random_state)
         X, y, X_test, y_test = self._before_fit(X, y, sample_weights)
