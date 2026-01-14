@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "pypsupertime"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 authors = [
   { name="Julian Flesch", email="julian.flesch@student.uni-tuebingen.de" },
 ]
@@ -17,14 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies=[
-  "numpy",
-  "matplotlib",
-  "seaborn",
-  "scikit-learn",
-  "scipy",
-  "scanpy",
-  "anndata",
-  "torch"
+    {file = ["requirements.in"]}
 ]
 
 [project.urls]
@@ -32,5 +25,3 @@ dependencies=[
 "Bug Tracker" = "https://github.com/claassenlab/pyPsupertime/issues"
 "API Documentation" = "https://pypsupertime.readthedocs.io/en/latest/"
 
-[tool.setuptools.package-data]
-"mypkg.data"=[]
