@@ -7,6 +7,24 @@ import warnings
 
 
 class RegularizationSearchCV:
+    """
+    Exhaustive search over a regularization path for an estimator.
+
+    Attributes
+    ----------
+    scores : list
+        Average cross validation scores for each regularization value.
+    scores_std : list
+        Standard deviation of cross validation scores for each regularization value.
+    train_scores : list
+        Average training scores for each regularization value.
+    train_scores_std : list
+        Standard deviation of training scores for each regularization value.
+    dof : list
+        Degrees of freedom (non-zero coefficients) for each regularization value.
+    fitted_estimators : list
+        Best fitted estimators for each regularization value.
+    """
 
     def __init__(self, 
                  estimator: BaseEstimator, 
@@ -19,6 +37,33 @@ class RegularizationSearchCV:
                  n_jobs=-1, 
                  n_folds=5,
                  verbosity=1):
+        """
+        Initializes the RegularizationSearchCV object.
+
+        Parameters
+        ----------
+        estimator : BaseEstimator
+            The estimator class to be used.
+        scoring : str, optional
+            Scoring metric to use, defaults to "accuracy".
+        reg_param_name : str, optional
+            Name of the regularization parameter in the estimator, defaults to "regularization".
+        reg_path : Iterable, optional
+            List of regularization values to try. If None, `n_params` values 
+            between `reg_high` and `reg_low` are used.
+        n_params : int, optional
+            Number of regularization values to try if `reg_path` is None, defaults to 40.
+        reg_high : float, optional
+            High end of the regularization path, defaults to 1.
+        reg_low : float, optional
+            Low end of the regularization path, defaults to 0.001.
+        n_jobs : int, optional
+            Number of parallel jobs, defaults to -1.
+        n_folds : int, optional
+            Number of cross-validation folds, defaults to 5.
+        verbosity : int, optional
+            Verbosity level, defaults to 1.
+        """
         
         self.verbosity = verbosity
         self.is_fitted = False
@@ -71,7 +116,26 @@ class RegularizationSearchCV:
         # best estimators
         self.fitted_estimators = []
 
-    def fit(self, X, y, fit_params=dict(), estimator_params=dict()):
+    def fit(self, X, y, params=dict(), estimator_params=dict()):
+        """
+        Runs the grid search for regularization.
+
+        Parameters
+        ----------
+        X : numpy.array
+            Training data.
+        y : Iterable
+            Target labels.
+        params : dict, optional
+            Additional parameters for the cross-validation.
+        estimator_params : dict, optional
+            Parameters for the estimator.
+
+        Returns
+        -------
+        RegularizationSearchCV
+            self
+        """
        
         # copy the params, in order to not mutate the original object
         estimator_params = copy(estimator_params)
@@ -79,8 +143,8 @@ class RegularizationSearchCV:
         if not isinstance(estimator_params, dict):
             raise ValueError("estimator_params must be of type dict")
 
-        if not isinstance(fit_params, dict):
-            raise ValueError("fit_params must be of type dict")
+        if not isinstance(params, dict):
+            raise ValueError("params must be of type dict")
 
         for i, reg in enumerate(self.reg_path):
             
@@ -97,7 +161,7 @@ class RegularizationSearchCV:
                                 error_score="raise",
                                 return_train_score=True,
                                 return_estimator=True,
-                                fit_params=fit_params
+                                params=params
                                 )
 
             best_idx = np.argmax(cv["test_score"])
@@ -123,17 +187,26 @@ class RegularizationSearchCV:
 
         Note: if method is "1se", but only a zero degree-of-freedom model can be found, 
         it automatically retries with method "best".
-        
 
-        :param method: Specify the method by which optimality is determined. Must be one of {"1se", "half_se", "best", "index"} defaults to "1se"
-        :type method: str, optional
-        :param index: Model at specific index that should be returned.
-         Only if method="index" is selected, defaults to None
-        :type index: integer, optional
-        :raises ValueError: When an invalid method parameter is given
-        :raises ValueError: When method "index" is chosen and the given index is out of bounds
-        :return: tuple of (idx, optimal_param)
-        :rtype: tuple
+        Parameters
+        ----------
+        method : {"1se", "half_se", "best", "index"}, optional
+            Specify the method by which optimality is determined, defaults to "1se"
+        index : int, optional
+            Model at specific index that should be returned.
+            Only if method="index" is selected, defaults to None
+
+        Returns
+        -------
+        tuple
+            tuple of (idx, optimal_param)
+
+        Raises
+        ------
+        ValueError
+            When an invalid method parameter is given
+        ValueError
+            When method "index" is chosen and the given index is out of bounds
         """
 
         if not method in ["1se", "half_se", "best", "index"]:
@@ -182,19 +255,25 @@ class RegularizationSearchCV:
             return self.get_optimal_regularization(method="best")
         
     def get_optimal_parameters(self, *args, **kwargs):
-        """ Returns the parameters of model with optimal reg_param. See `get_optimal_regularization` for more details
+        """ Returns the parameters of model with optimal reg_param. 
+        See `get_optimal_regularization` for more details.
 
-        :return: Model parameters
-        :rtype: dict
+        Returns
+        -------
+        dict
+            Model parameters
         """
         reg, idx = self.get_optimal_regularization(*args, **kwargs)
         return self.fitted_estimators[idx].get_params()
 
     def get_optimal_model(self, *args, **kwargs):
-        """ Returns the model with optimal reg_param. See `get_optimal_regularization` for more details
+        """ Returns the model with optimal reg_param. 
+        See `get_optimal_regularization` for more details.
 
-        :return: Optimal model
-        :rtype: sklearn.base.BaseModel
+        Returns
+        -------
+        PsupertimeBaseModel
+            Optimal model
         """
         return self.estimator(**self.get_optimal_parameters(*args, **kwargs))
 

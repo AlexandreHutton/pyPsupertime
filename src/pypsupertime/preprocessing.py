@@ -19,10 +19,15 @@ def restructure_y_to_bin(y_orig):
     vector $j$ the labels  $l_i$ with $i<j$ are converted to 0 and the 
     labels $i < j$ are converted to 1.
 
-    :param y_orig: Original data set labels
-    :type y_orig: Iterable
-    :return: Restructured Labels: array of length n * k
-    :rtype: numpy array
+    Parameters
+    ----------
+    y_orig : Iterable
+        Original data set labels
+
+    Returns
+    -------
+    numpy.array
+        Restructured Labels: array of length n * k
     """
     y_classes = np.unique(y_orig)
     k = len(y_classes)
@@ -46,12 +51,17 @@ def restructure_X_to_bin(X_orig, n_thresholds):
     initialized to zero. Each column column represents the threshold for a 
     label $l_i$ and is set to 1, exactly  where that label $l_1$ occurs.
 
-    :param X_orig: input data
-    :type X_orig: numpy array or sparse.csr_matrix with shape (n_cells, n_genes)
-    :param n_thresholds: number of thresholds to be learned - equal to num_unique_labels - 1
-    :type n_thresholds: integer
-    :return: Restructured matrix of shape (n_cells * n_thresholds, n_genes + n_thresholds)
-    :rtype: numpy array
+    Parameters
+    ----------
+    X_orig : numpy.array or scipy.sparse.csr_matrix
+        input data with shape (n_cells, n_genes)
+    n_thresholds : int
+        number of thresholds to be learned - equal to num_unique_labels - 1
+
+    Returns
+    -------
+    numpy.array or scipy.sparse.csr_matrix
+        Restructured matrix of shape (n_cells * n_thresholds, n_genes + n_thresholds)
     """
 
     n = X_orig.shape[0]
@@ -72,10 +82,16 @@ def transform_labels(y: Iterable[numeric]):
     """
     Transforms a target vector, such that it contains successive labels starting at 0.
 
-    :param y: Iterable containing the ordinal labels of a dataset. Note: Must be number (int, float, np.number)!
-    :type y: Iterable[number]
-    :return: Numpy array with the labels converted
-    :rtype: numpy.array
+    Parameters
+    ----------
+    y : Iterable[numeric]
+        Iterable containing the ordinal labels of a dataset. 
+        Note: Must be numeric (int, float, np.number)!
+
+    Returns
+    -------
+    numpy.array
+        Numpy array with the labels converted
     """
 
     # convert to numeric 
@@ -105,6 +121,12 @@ def calculate_weights(y):
     Calculates balanced class weights according to
     `n_samples / (n_classes * np.bincount(y))`
     as is done in sklearn.
+
+    Args:
+        y (Iterable): Array of class labels.
+
+    Returns:
+        np.array: Array of weights for each sample in y.
     """
     classes = np.unique(y)
     weights = class_weight.compute_class_weight("balanced", classes=classes, y=y)
@@ -118,15 +140,20 @@ def smooth(adata, knn=10, inplace=True):
     """
     Smoothes data by averaging over the k nearest neighbors as a denoising step.
 
-    :param adata: annotation data object with data in `adata.X` 
-    :type adata: anndata.AnnData
-    :param knn: number of nearest neighbors to smooth over, defaults to 10
-    :type knn: int, optional
-    :param inplace: Perform the smoothing on the original anndata object, overwriting the existing `adata.X`.
-      If set to False, a copy of `adata` is created, defaults to True
-    :type inplace: bool, optional
-    :return: annotation data instance 
-    :rtype: anndata.AnnData
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        annotation data object with data in `adata.X` 
+    knn : int, optional
+        number of nearest neighbors to smooth over, defaults to 10
+    inplace : bool, optional
+        Perform the smoothing on the original anndata object, overwriting the existing `adata.X`.
+        If set to False, a copy of `adata` is created, defaults to True
+
+    Returns
+    -------
+    anndata.AnnData
+        annotation data instance
     """
 
     if sparse.issparse(adata.X):
@@ -184,39 +211,39 @@ class Preprocessing(BaseEstimator, TransformerMixin):
     
     The [scanpy](https://scanpy.readthedocs.io/en/stable/) package is used to perform each of the steps above.
 
-    :param log: Perform log transformation after adding 1 where counts are 0, defaults to False
-    :type log: bool, optional
-    :param scale: Scale to unit variance and shifting to mean zero, defaults to True
-    :type scale: bool, optional
-    :param normalize: Normalize over all counts, defaults to False
-    :type normalize: bool, optional
-    :param smooth: Smooth over nearest neighbor, defaults to False
-    :type smooth: bool, optional
-    :param smooth_knn: Number of neighbors to average over, if `smooth` is set to True. Defaults to 10
-    :type smooth_knn: int, optional
-    :param select_genes: Method of selecting genes. Must be one of
+    Parameters
+    ----------
+    log : bool, optional
+        Perform log transformation after adding 1 where counts are 0, defaults to False
+    scale : bool, optional
+        Scale to unit variance and shifting to mean zero, defaults to True
+    normalize : bool, optional
+        Normalize over all counts, defaults to False
+    smooth : bool, optional
+        Smooth over nearest neighbor, defaults to False
+    smooth_knn : int, optional
+        Number of neighbors to average over, if `smooth` is set to True. Defaults to 10
+    select_genes : str, optional
+        Method of selecting genes. Must be one of
         - `"all"`: use all genes. This is ssed by default, but is the most computationally expensive
         - `"hvg"`: highly variable genes according to the seurat implementation
         - `"tf_mouse"`: Use list of mouse transcription factors. Not implemented, yet
         - `"tf_human"`: Use list of human transcription factors. Not implemented, yet
         - `"list"`: Use a user-curated list.
-    :type select_genes: str, optional
-    :param gene_list: Iterable of user-selected genes, only used if `select_genes` equals `"list"`. Defaults to None
-    :type gene_list: Optional[Iterable], optional
-    :param min_gene_mean: Minimum average counts cutoff per gene, defaults to 0.01
-    :type min_gene_mean: float, optional
-    :param max_gene_mean: Maximum average counts cutoff per gene, defaults to 3. Note: Currently not used!
-    :type max_gene_mean: float, optional
-    :param hvg_min_dispersion: Miminum dispersion cutoff, only used if `select_genes` equals `"hvg"` 
+    gene_list : Iterable, optional
+        Iterable of user-selected genes, only used if `select_genes` equals `"list"`. Defaults to None
+    min_gene_mean : float, optional
+        Minimum average counts cutoff per gene, defaults to 0.01
+    max_gene_mean : float, optional
+        Maximum average counts cutoff per gene, defaults to 3. Note: Currently not used!
+    hvg_min_dispersion : float, optional
+        Miminum dispersion cutoff, only used if `select_genes` equals `"hvg"` 
         and `hvg_n_top_genes` unequals `None`. Defaults to 0.5
-    :type hvg_min_dispersion: float, optional
-    :param hvg_max_dispersion: Maximum dispersion cutoff, only used if `select_genes` equals `"hvg"`
+    hvg_max_dispersion : float, optional
+        Maximum dispersion cutoff, only used if `select_genes` equals `"hvg"`
         and `hvg_n_top_genes` unequals `None`. Defaults to np.inf
-    :type hvg_max_dispersion: float, optional
-    :param hvg_n_top_genes: Number of genes to select, only used if `select_genes` equals `"hvg"`. Defaults to None
-    :type hvg_n_top_genes: Optional[int], optional
-    :raises ValueError: _description_
-    :raises ValueError: _description_
+    hvg_n_top_genes : int, optional
+        Number of genes to select, only used if `select_genes` equals `"hvg"`. Defaults to None
     """
 
     def __init__(self, 
@@ -232,6 +259,22 @@ class Preprocessing(BaseEstimator, TransformerMixin):
                  hvg_min_dispersion: float = 0.5,
                  hvg_max_dispersion: float = np.inf,
                  hvg_n_top_genes: Optional[int] = None):
+        """
+        Initializes the Preprocessing transformer.
+
+        :param log: Whether to log-transform the data.
+        :param scale: Whether to scale the data to unit variance and zero mean.
+        :param normalize: Whether to normalize counts per cell.
+        :param smooth: Whether to smooth data using KNN.
+        :param smooth_knn: Number of neighbors for smoothing.
+        :param select_genes: Method for gene selection ('all', 'hvg', 'list', etc.).
+        :param gene_list: List of genes to use if select_genes is 'list'.
+        :param min_gene_mean: Minimum mean expression for gene filtering.
+        :param max_gene_mean: Maximum mean expression for gene filtering.
+        :param hvg_min_dispersion: Minimum dispersion for HVG selection.
+        :param hvg_max_dispersion: Maximum dispersion for HVG selection.
+        :param hvg_n_top_genes: Number of top HVGs to select.
+        """
         
         self.scale = scale
         self.log = log
@@ -263,20 +306,29 @@ class Preprocessing(BaseEstimator, TransformerMixin):
             self.gene_list = np.array(self.gene_list)
 
 
-    def fit_transform(self, adata: ad.AnnData, y: Optional[Iterable] = None, **fit_params) -> ad.AnnData:
+    def fit_transform(self, adata: ad.AnnData, y: Optional[Iterable] = None, **params) -> ad.AnnData:
         """Fits transformer to an instance of `anndata.Anndata` and returns a transformed version of it
-         with the user-selected preprocessing applied.
+        with the user-selected preprocessing applied.
 
-         This transformer strictly works on anndata instances, which store data and labels in a single object.
-         The parameters `y` is therfor never used, but kept to comply with the sklearn standard.
+        This transformer strictly works on anndata instances, which store data and labels in a single object.
+        The parameters `y` is therefore never used, but kept to comply with the sklearn standard.
 
-        :param adata: Annotation data instance to be transformed
-        :type adata: anndata.AnnData
-        :param y: Only described to conform with the ever used, defaults to None
-        :type y: Optional[Iterable], optional
-        :raises NotImplementedError: When `select_genes` is set to `tf_human` or `tf_mouse`
-        :return: Transformed AnnData
-        :rtype: anndata.AnnData
+        Parameters
+        ----------
+        adata : anndata.AnnData
+            Annotation data instance to be transformed
+        y : Iterable, optional
+            Only described to conform with the sklearn standard, not used.
+
+        Returns
+        -------
+        anndata.AnnData
+            Transformed AnnData
+
+        Raises
+        ------
+        NotImplementedError
+            When `select_genes` is set to `tf_human` or `tf_mouse`
         """
 
         # log transform: adata.X = log(adata.X + 1)

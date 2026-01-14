@@ -16,16 +16,21 @@ def plot_grid_search(grid_search: RegularizationSearchCV, title: str="Grid Searc
     regularization path. Indicates the best model and most sparse model within one standard error of the 
     best score based on the averaged cross validation scores. 
 
-    :param grid_search: grid search object
-    :type grid_search: RegularizationSearchCV
-    :param title: Figure title, defaults to "Grid Search Results"
-    :type title: str, optional
-    :param figsize: Size of the matplotlib figure, defaults to (16,4)
-    :type figsize: tuple, optional
-    :param y_log_weights: log scale y axis of weights plot, defaults to False
-    :type y_log_weights: boolean
-    :return: figure instance 
-    :rtype: matplotlib.pyplot.Figure
+    Parameters
+    ----------
+    grid_search : RegularizationSearchCV
+        grid search object
+    title : str, optional
+        Figure title, defaults to "Grid Search Results"
+    figsize : Tuple[int, int], optional
+        Size of the matplotlib figure, defaults to (16,4)
+    y_log_weights : bool, optional
+        log scale y axis of weights plot, defaults to False
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        figure instance 
     """
     if not isinstance(grid_search, RegularizationSearchCV):
         raise ValueError("The first argument needs to be a completed GridSearch")
@@ -75,18 +80,23 @@ def plot_model_perf(model: PsupertimeBaseModel, train: Tuple[Iterable, Iterable]
     """Print model performance statistics and plot the confusion matrices for the 
     test and training prediction, respectively.
 
-    :param model: Fitted instance of a PsupertimeBaseModel
-    :type model: PsupertimeBaseModel
-    :param train: X_train, y_train
-    :type train: tuple
-    :param test: X_test, y_test
-    :type test: tuple, optional
-    :param title: Figure title, defaults to "Model Predictions"
-    :type title: str, optional
-    :param figsize: Size of the matplotlib figure, defaults to (16,4)
-    :type figsize: tuple, optional
-    :return: figure instance
-    :rtype: matplotlib.pyplot.Figure
+    Parameters
+    ----------
+    model : PsupertimeBaseModel
+        Fitted instance of a PsupertimeBaseModel
+    train : Tuple[Iterable, Iterable]
+        X_train, y_train
+    test : Tuple[Iterable, Iterable], optional
+        X_test, y_test, defaults to None
+    title : str, optional
+        Figure title, defaults to "Model Predictions"
+    figsize : Tuple[int, int], optional
+        Size of the matplotlib figure, defaults to (10, 4)
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        figure instance
     """
     if not isinstance(model, PsupertimeBaseModel):
         raise ValueError("The first argument needs to be a fitted sklearn model")
@@ -157,16 +167,25 @@ def plot_identified_gene_coefficients(model: PsupertimeBaseModel, anndata: ad.An
     """Extracts gene weigts from model and plots the `n_top` highest gene coefficient sorted by their abs value
     as horizontal bars.
 
-    :param model: fitted model
-    :type model: PsupertimeBaseModel
-    :param anndata: annotation data
-    :type anndata: ad.AnnData
-    :param n_top: number of highest coefficients to plot, defaults to 30
-    :type n_top: int, optional
-    :param figsize: Size of the matplotlib figure, defaults to (6,6)
-    :type figsize: tuple, optional
-    :return: Returns the plot as matplotlib figure
-    :rtype: matplotlib.pyplot.Figure
+    Parameters
+    ----------
+    model : PsupertimeBaseModel
+        fitted model
+    anndata : ad.AnnData
+        annotation data
+    n_top : int, optional
+        number of highest coefficients to plot, defaults to 30
+    figsize : Tuple[int, int], optional
+        Size of the matplotlib figure, defaults to (6,6)
+    *args
+        Additional arguments
+    **kwargs
+        Additional keyword arguments
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Returns the plot as matplotlib figure
     """
     if not isinstance(anndata, ad.AnnData):
         raise ValueError("anndata must be an instanec of anndat.AnnData")
@@ -191,23 +210,45 @@ def plot_identified_gene_coefficients(model: PsupertimeBaseModel, anndata: ad.An
     return fig
 
 
-def plot_identified_genes_over_psupertime(n = 20, *args, **kwargs):
+def plot_identified_genes_over_psupertime(n=20, *args, **kwargs):
+    """
+    Plots the expression of identified genes over psupertime.
+    (Currently not implemented)
+
+    Parameters
+    ----------
+    n : int, optional
+        Number of genes to plot, defaults to 20
+    *args
+        Additional arguments
+    **kwargs
+        Additional keyword arguments
+    """
     raise NotImplementedError()
 
 
 def plot_labels_over_psupertime(model: PsupertimeBaseModel, anndata: ad.AnnData, label_key: str, figsize: Tuple[int, int]=(10, 5), *args, **kwargs) -> plt.Figure:
     """Distirbution of cells, grouped by their ordinal label as a function of the predicted pseudotime.
 
-    :param model: fitted psupertime model
-    :type model: PsupertimeBaseModel
-    :param anndata: annotation data instance
-    :type anndata: ad.AnnData
-    :param label_key: label of the column with ordinal labels in anndata.obs
-    :type label_key: str
-    :param figsize: Size of matplotlib figure, defaults to (10, 5)
-    :type figsize: tuple, optional
-    :return: Matplotlib figure
-    :rtype: matplotlib.pyplot.Figure
+    Parameters
+    ----------
+    model : PsupertimeBaseModel
+        fitted psupertime model
+    anndata : ad.AnnData
+        annotation data instance
+    label_key : str
+        label of the column with ordinal labels in anndata.obs
+    figsize : Tuple[int, int], optional
+        Size of matplotlib figure, defaults to (10, 5)
+    *args
+        Additional arguments
+    **kwargs
+        Additional keyword arguments
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Matplotlib figure
     """
 
     if not isinstance(anndata, ad.AnnData):
