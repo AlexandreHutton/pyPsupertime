@@ -9,6 +9,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import warnings
 from typing import Optional, Tuple, Iterable
+import matplotlib
 
 
 def plot_grid_search(grid_search: RegularizationSearchCV, title: str="Grid Search Results", figsize: Tuple[int, int]=(16,4), y_log_weights: bool=False):
@@ -163,7 +164,11 @@ def plot_model_perf(model: PsupertimeBaseModel, train: Tuple[Iterable, Iterable]
     return fig
 
 
-def plot_identified_gene_coefficients(model: PsupertimeBaseModel, anndata: ad.AnnData,  n_top: int=30, figsize: Tuple[int, int]=(6,6), *args, **kwargs):
+def plot_identified_gene_coefficients(model: PsupertimeBaseModel,
+                                      anndata: ad.AnnData,
+                                      n_top: int=30,
+                                      figsize: Tuple[int, int]=(6,6),
+                                      ax: matplotlib.axes.Axes=None):
     """Extracts gene weigts from model and plots the `n_top` highest gene coefficient sorted by their abs value
     as horizontal bars.
 
@@ -177,10 +182,8 @@ def plot_identified_gene_coefficients(model: PsupertimeBaseModel, anndata: ad.An
         number of highest coefficients to plot, defaults to 30
     figsize : Tuple[int, int], optional
         Size of the matplotlib figure, defaults to (6,6)
-    *args
-        Additional arguments
-    **kwargs
-        Additional keyword arguments
+    ax : matplotlib.axes.Axes, optional
+        Axes where to plot the figure. If none, a new figure is created.
 
     Returns
     -------
@@ -201,7 +204,8 @@ def plot_identified_gene_coefficients(model: PsupertimeBaseModel, anndata: ad.An
     max_val = np.abs(var_copy[psuper_weights_key][sorted_idx][-1])
 
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
+    if ax is None:
+        ax = fig.add_subplot(111)
     var_copy[psuper_weights_key][sorted_idx[-n_top:]].plot.barh(ax=ax, width=0.25, color="black")
     ax.bar_label(ax.containers[0])
     ax.set_xlim((-(max_val * 1.5), max_val * 1.5))
