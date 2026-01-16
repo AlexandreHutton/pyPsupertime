@@ -231,7 +231,11 @@ def plot_identified_genes_over_psupertime(n=20, *args, **kwargs):
     raise NotImplementedError()
 
 
-def plot_labels_over_psupertime(model: PsupertimeBaseModel, anndata: ad.AnnData, label_key: str, figsize: Tuple[int, int]=(10, 5), *args, **kwargs) -> plt.Figure:
+def plot_labels_over_psupertime(model: PsupertimeBaseModel,
+                                anndata: ad.AnnData,
+                                label_key: str,
+                                figsize: Tuple[int, int]=(10, 5),
+                                ax: matplotlib.axes.Axes=None) -> plt.Figure:
     """Distirbution of cells, grouped by their ordinal label as a function of the predicted pseudotime.
 
     Parameters
@@ -244,10 +248,8 @@ def plot_labels_over_psupertime(model: PsupertimeBaseModel, anndata: ad.AnnData,
         label of the column with ordinal labels in anndata.obs
     figsize : Tuple[int, int], optional
         Size of matplotlib figure, defaults to (10, 5)
-    *args
-        Additional arguments
-    **kwargs
-        Additional keyword arguments
+    ax : matplotlib.axes.Axes, optional
+        Axes where to plot the figure. If none, a new figure is created.
 
     Returns
     -------
@@ -269,7 +271,8 @@ def plot_labels_over_psupertime(model: PsupertimeBaseModel, anndata: ad.AnnData,
     obs_copy = model.predict_psuper(anndata, inplace=False)
 
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
+    if ax is None:
+        ax = fig.add_subplot(111)
 
     palette='RdBu'
     col_vals = sns.color_palette(palette, len(obs_copy[label_key].unique()))
